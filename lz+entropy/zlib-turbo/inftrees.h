@@ -20,10 +20,13 @@
    the number of bits in this code or part of the code to drop off
    of the bit buffer.  val is the actual byte to output in the case
    of a literal, the base length or distance, or the offset from
-   the current table to the next table.  Each entry is four bytes. */
+   the current table to the next table.  Each entry is four bytes.
+   zlib-turbo: bits comes first, so that inffast.c can shift the bit buffer
+   by an entry read as one 32-bit word (see Z_ENTRY32 there); inffixed.h
+   follows that order. */
 typedef struct {
-    unsigned char op;           /* operation, extra bits, table bits */
     unsigned char bits;         /* bits in this part of the code */
+    unsigned char op;           /* operation, extra bits, table bits */
     unsigned short val;         /* offset in table or code value */
 } code;
 
@@ -42,7 +45,9 @@ typedef struct {
    9 and 6 bits. Define Z_INFLATE_FAST64 as 0 to use zlib's decoder, or as 1
    to use the fast loop; it needs a 64-bit integer type. */
 #ifndef Z_INFLATE_FAST64
-#  if defined(__x86_64__) || defined(__aarch64__) || defined(_M_X64) ||       defined(_M_ARM64) || defined(_WIN64) || defined(__LP64__) ||       defined(_LP64) || defined(__i386__) || defined(_M_IX86)
+#  if defined(__x86_64__) || defined(__aarch64__) || defined(_M_X64) || \
+      defined(_M_ARM64) || defined(_WIN64) || defined(__LP64__) || \
+      defined(_LP64) || defined(__i386__) || defined(_M_IX86)
 #    define Z_INFLATE_FAST64 1
 #  else
 #    define Z_INFLATE_FAST64 0
